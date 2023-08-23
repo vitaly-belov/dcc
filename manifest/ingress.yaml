@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  namespace: devopscloudrucamp
+  labels:
+    app.kubernetes.io/name: app
+    app.kubernetes.io/instance: app
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "localhost"
+      http:
+        paths:
+          - path: /hostname
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: app
+                port:
+                  number: 8000
+          - path: /author
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: app
+                port:
+                  number: 8000
+          - path: /id
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: app
+                port:
+                  number: 8000

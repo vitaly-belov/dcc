@@ -1,0 +1,35 @@
+---
+ -  hosts: all
+
+    tasks:
+    - name: User cloudru present
+      ansible.builtin.user:
+        name: cloudru
+        password: "{{ 'cloudpass' | password_hash('sha512') }}"
+        state: "present"
+      become: true
+
+    - name: Disable root SSH login
+      lineinfile:
+            dest: /etc/ssh/sshd_config
+            regexp: '^PermitRootLogin'
+            line: "PermitRootLogin no"
+            state: present
+            backup: yes
+      become: true
+      notify:
+        - restart ssh
+
+    - name: Set authorized key taken from file
+      ansible.posix.authorized_key:
+        user: cloudru
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/cloudru_id_rsa.pub') }}"
+      become: true
+
+    handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted
+      become: true
